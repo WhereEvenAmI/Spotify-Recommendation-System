@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+import re
 import pandas as pd
 from scipy.sparse import csr_matrix
 
@@ -33,3 +34,42 @@ def build_matrix(interactions):
         shape=(len(users), len(songs)),
     )
     return matrix, user_to_row, song_to_col
+
+AUDIO_FEATURES = [
+    "danceability", "energy", "loudness", "speechiness",
+    "acousticness", "instrumentalness", "liveness", "valence", "tempo",
+]
+
+
+def normalise(text):
+    """Strip an artist or track name down to a comparable form.
+
+    Uses \\w with the unicode flag rather than [a-z0-9] -- an ASCII-only
+    pattern silently empties every non-Latin-script title.
+    """
+    if not isinstance(text, str):
+        return ""
+    t = text.lower()
+    t = re.sub(r"\(.*?\)|\[.*?\]", " ", t)
+    t = re.sub(r"\s-\s.*$", " ", t)
+    t = re.sub(r"\b(feat|ft|featuring|with)\b.*$", " ", t)
+    t = t.replace("'", "").replace("\u2019", "")
+    t = re.sub(r"[^\w\s]", " ", t, flags=re.UNICODE)
+    return re.sub(r"\s+", " ", t).strip()
+
+
+def load_track_features(song_to_col):
+    """Audio features for the songs in our matrix, indexed by column number."""
+    tracks = pd.read_csv(DATA_DIR / "track_features.csv")
+
+    tracks["key"] = (
+        tracks["artists"].astype(str).str.split(";").str[0].map(normalise)
+        + "|"
+        + tracks["track_name"].map(normalise)
+    )
+
+    tracks = tracks.drop_duplicates(subset="key")
+    tracks = tracks[tracks["key"].isin(song_to_col)].copy()
+    tracks["col"] = tracks["key"].map(song_to_col)
+
+    return tracks.set_index("col").sort_index()

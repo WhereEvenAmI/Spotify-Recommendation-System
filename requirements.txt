@@ -1,5 +1,7 @@
-pandas
 numpy
+pandas
 scipy
-ipykernel
+scikit-learn
 implicit
+joblib
+streamlit

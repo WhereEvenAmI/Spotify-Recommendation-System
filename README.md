@@ -6,6 +6,8 @@ most-popular baseline — while covering 66× more of the catalogue.
 
 ---
 
+**[Live demo](https://your-app.streamlit.app)** · pick a few songs and compare four models
+
 ## Why this dataset is awkward
 
 Most public music-recommender projects use Spotify's `audio-features` API or the

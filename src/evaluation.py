@@ -71,3 +71,14 @@ def evaluate(recommend_fn, test, eval_users, k=10, sample=2000, seed=42):
         f"recall@{k}": round(float(np.mean(r)), 4),
         f"ndcg@{k}": round(float(np.mean(n)), 4),
     }
+
+def catalogue_coverage(recommend_fn, eval_users, n_items, k=10, sample=2000, seed=42):
+    """Fraction of the catalogue that appears in anyone's recommendations."""
+    rng = np.random.default_rng(seed)
+    chosen = rng.choice(eval_users, size=min(sample, len(eval_users)), replace=False)
+
+    recommended = set()
+    for u in chosen:
+        recommended.update(recommend_fn(u, k))
+
+    return len(recommended) / n_items

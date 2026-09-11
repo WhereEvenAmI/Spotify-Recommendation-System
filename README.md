@@ -6,7 +6,7 @@ most-popular baseline — while covering 66× more of the catalogue.
 
 ---
 
-**[Live demo](https://your-app.streamlit.app)** · pick a few songs and compare four models
+**[Live demo](https://spotify-recommendation-system-ir3c5orlhaashfa48gcyv8.streamlit.app/)** · pick a few songs and compare four models
 
 ## Why this dataset is awkward
 
